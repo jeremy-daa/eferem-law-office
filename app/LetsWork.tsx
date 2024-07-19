@@ -19,7 +19,7 @@ export default function LetsWork() {
         </h2>
       </div>
       <Link
-        href={"/"}
+        href={"/contact"}
         className="relative w-fit px-10 sm:px-20 py-5 rounded-lg flex items-center gap-14 bg-[#085AA3] border border-[#085AA3] text-2xl text-[#fff] font-semibold"
       >
         <p>Contact Us</p>

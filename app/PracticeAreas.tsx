@@ -2,6 +2,7 @@ import React from 'react'
 import practiceAreas from '@/data/practiceAreas'
 import Link from 'next/link'
 import { PiArrowRightFill } from "react-icons/pi";
+import Image from 'next/image';
 
 export default function PracticeAreas() {
   return (
@@ -9,9 +10,10 @@ export default function PracticeAreas() {
         <h2 className='text-5xl xs:text-[60px] text-[#3a3a38] font-semibold'>Our Practice Areas</h2>
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-10">
             {practiceAreas?.slice(0, 4).map((area, index) => (
-                <Link href={`/practice-areas#${area.id}`} key={index} className="w-full md:max-w-[570px] hover:scale-105 duration-300 px-5 xs:px-12 py-10 bg-[#085AA3] rounded-lg flex flex-col gap-5">
-                    <div className="w-fit flex items-center justify-center bg-[#043C6F] text-5xl text-[#FCA834] rounded-full p-4">
-                        {area.icon}
+                <Link href={`/practice-areas#${area.id}`} key={index} className="w-full md:max-w-[570px] hover:scale-105 duration-300 px-5 xs:px-12 py-10 bg-[#085AA3aa] rounded-lg flex flex-col gap-5">
+                    <div className="w-fit flex items-center justify-center  text-5xl text-[#FCA834] rounded-full">
+                        {/* {area.icon} */}
+                        <Image src={"/images/Logo.png"} width={65} height={65} alt={area.title} quality={100} />
                     </div>
                     <h3 className="text-white text-3xl font-bold">{area.title}</h3>
                     <p className="text-white text-xl font-light">{area.services[0].slice(0, 120)}</p>

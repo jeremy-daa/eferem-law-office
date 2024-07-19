@@ -7,13 +7,12 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        id: { label: "ID", type: "text" },
         username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         const res = await fetch(`${process.env.NEXTAUTH_URL}/api/admin`, {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
@@ -21,7 +20,12 @@ export const authOptions: NextAuthOptions = {
         });
         const data = await res.json();
         const admin = data.admin;
-        const user = { id: admin.id, name: admin.username, email: admin.email };
+
+        const user = {
+          id: admin._id,
+          name: admin.fullName,
+          email: admin._id,
+        };
 
         if (user) {
           return user;
@@ -30,12 +34,6 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  callbacks: {
-    session: async ({ session, user }) => {
-      session.user.id = user.id;
-      return Promise.resolve(session);
-    },
-  },
 };
 
 export const getAuthSession = () => getServerSession(authOptions);

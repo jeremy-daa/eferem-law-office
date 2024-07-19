@@ -13,20 +13,24 @@ export default function BlogCard({d}: BlogCardProps) {
     <div className='w-full px-8 sm:px-[100px] pb-10 flex flex-col items-center gap-5'>
         <h3 className='text-lg sm:text-xl md:text-xl text-[#3a3a38] font-normal text-center'>News</h3>
         <h2 className='text-3xl sm:text-4xl md:text-6xl text-[#3a3a38] font-semibold text-center max-w-[600px] md:leading-[4.25rem] mb-10'>The Latest News And Blog From ELO</h2>
-        <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-14">
+        <div className="w-full flex flex-wrap justify-center gap-16">
             {blogs?.map((blog: any, index: any) => (
-                <div key={index} className='w-full lg:max-w-[600px] flex flex-col sm:flex-row gap-5 items-center'>
-                    <div className="relative w-full sm:w-[400px] h-[300px] ">
-                        <Image className='w-full h-full object-cover' src={blog.image} alt={blog.title} width={800} height={600} quality={100} />
+                <Link href={`/blog/${blog.id}`} key={index} className='group w-[350px] h-[400px] relative book'>
+                    <div className="absolute left-0 top-0 w-full h-full flex flex-col p-10 bg-[#eee] duration-1000 bookpage">
+                        <Image src={"/images/Logo_water.png"} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[200px] object-contain" alt="lets work" width={1080} height={1080} quality={100} />
+                        <Image className='w-full h-[120px] object-cover rounded-sm mb-3' src={blog.image} alt={blog.title} width={1920} height={1080} quality={100} />
+                        <p className='relative'>{blog.content.slice(0, 200)}...</p>
                     </div>
-                    <div className="flex flex-col gap-5">
-                        <h3 className='text-3xl font-medium leading-[2.3rem] max-w-[350px] text-[#3A3A38]'>{blog.title}</h3>
-                        <div className="flex flex-col gap-10 border-t border-[#3A3A38] pt-5">
-                            <p className='text-lg font-normal text-[#3A3A38]'>{blog.content.slice(0, 100)}</p>
+                    <div className="relative overflow-hidden w-full h-full bg-[#fff] border-2 border-[#085AA3] duration-1000 bookcover">
+                        <Image className='absolute top-0 left-0 w-full h-full object-cover blur-sm' src={blog.image} alt={blog.title} width={1920} height={1080} quality={100} />
+                        <div className="relative w-full h-full flex flex-col items-center bg-[#ffffffaa] pt-20 pb-10 px-7 gap-10 ">
+                            <div className="absolute left-10 top-10 -translate-y-1/2 rotate-45 w-10 h-80 bg-[#085AA3]"></div>
+                            <div className="absolute left-12 top-10 -translate-y-1/2 rotate-45 w-3 h-80 bg-[#fff]"></div>
+                            <Image className='max-w-[80px] object-contain' src={"/images/Logo.png"} alt='logo' width={1080} height={1080} quality={100} />
+                            <h2 className='text-center text-2xl text-[#38383a] font-bold'>{blog.title}</h2>
                         </div>
-                        <Link href={`/blog/${blog.id}`} className="group w-fit px-8 sm:px-10 py-2 flex items-center gap-14 bg-[#085AA3] border border-[#085AA3] rounded-lg text-lg text-[#fff] font-semibold"><p>Read now</p></Link>
                     </div>
-                </div>
+                </Link>
             ))}
         </div>
     </div>

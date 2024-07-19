@@ -53,23 +53,24 @@ const Navbar = () => {
   const checkCurrentPage = (page: string) => currentPage === page;
   
   return (
-    <div className="relative w-full overflow-x-hidden">
-      <nav className={`fixed top-0 left-0 z-[999999] ${scrollingUp ? "translate-y-0" : isScrolled && "translate-y-[-100%]"} ${isScrolled ? "bg-white shadow-lg py-[20px]" : "py-[50px]"} duration-300 w-full md:px-[100px] px-[30px] flex justify-between items-center gap-10`}>
+    <div className={`relative w-full overflow-x-hidden ${currentPage === "admin" && ""}`}>
+      {/* <nav className={`fixed top-0 left-0 z-[999999] ${scrollingUp ? "translate-y-0" : isScrolled && "translate-y-[-100%]"} ${isScrolled ? "bg-white shadow-lg py-[20px]" : "py-[50px]"} duration-300 w-full md:px-[100px] px-[30px] flex justify-between items-center gap-10`}> */}
+      <nav className={`fixed top-0 left-0 z-[999999] ${isScrolled ? "bg-white shadow-lg py-[20px]" : "py-[50px]"} duration-300 w-full md:px-[100px] px-[30px] flex justify-between items-center gap-10`}>
         <Link href={"/"} className="flex gap-4 items-center">
           <Image className="w-16 h-16" src="/images/Logo.png" width={200} height={200} alt="Eferem Law Office" quality={100} />
-          <h2 className={`sm:text-2xl text-xl font-bold ${isWhite ? "text-white" : "text-[#3a3a38]"}`}>Eferem Law Office</h2>
+          <h2 className={`sm:text-2xl text-xl font-bold ${isWhite ? "text-white" : isScrolled ? "text-[#38383a]" : "text-white"}`}>Eferem Law Office</h2>
         </Link>
 
         <div className="hidden xl:flex items-center gap-[50px]">
-          <Link href="/" className={`text-lg ${isWhite && "text-[#ffffff_!important]"} hover:text-[#085AA3] duration-300 ${checkCurrentPage("") ? "text-[#085AA3] font-bold" : "text-[#3a3a38]"}`}>Home</Link>
-          <Link href="/about" className={`text-lg ${isWhite && "text-[#ffffff_!important]"} hover:text-[#085AA3] duration-300 ${checkCurrentPage("about") ? "text-[#085AA3]" : "text-[#3a3a38]"}`}>About</Link>
-          <Link href="/practice-areas" className={`text-lg ${isWhite && "text-[#ffffff_!important]"} hover:text-[#085AA3] duration-300 ${checkCurrentPage("practice-areas") ? "text-[#085AA3]" : "text-[#3a3a38]"}`}>Practice Areas</Link>
-          <Link href="/our-team" className={`text-lg ${isWhite && "text-[#ffffff_!important]"} hover:text-[#085AA3] duration-300 ${checkCurrentPage("our-team") ? "text-[#085AA3]" : "text-[#3a3a38]"}`}>Our Team</Link>
-          <Link href="/blog" className={`text-lg ${isWhite && "text-[#ffffff_!important]"} hover:text-[#085AA3] duration-300 ${checkCurrentPage("blog") ? "text-[#085AA3]" : "text-[#3a3a38]"}`}>Blog</Link>
-          <Link href="/contact" className={`text-lg ${isWhite && "text-[#ffffff_!important]"} hover:text-[#085AA3] duration-300 ${checkCurrentPage("contact") ? "text-[#085AA3]" : "text-[#3a3a38]"}`}>Contact</Link>
+          <Link href="/" className={`text-lg ${isWhite && "text-[#ffffff_!important]"} hover:text-[#FCA834] duration-300 ${checkCurrentPage("") ? "text-[#FCA834] font-bold" : isScrolled ? "text-[#38383a]" : "text-white"}`}>Home</Link>
+          <Link href="/about" className={`text-lg ${isWhite && "text-[#ffffff_!important]"} hover:text-[#FCA834] duration-300 ${checkCurrentPage("about") ? "text-[#FCA834]" : isScrolled ? "text-[#38383a]" : "text-white"}`}>About</Link>
+          <Link href="/practice-areas" className={`text-lg ${isWhite && "text-[#ffffff_!important]"} hover:text-[#FCA834] duration-300 ${checkCurrentPage("practice-areas") ? "text-[#FCA834]" : isScrolled ? "text-[#38383a]" : "text-white"}`}>Practice Areas</Link>
+          <Link href="/our-team" className={`text-lg ${isWhite && "text-[#ffffff_!important]"} hover:text-[#FCA834] duration-300 ${checkCurrentPage("our-team") ? "text-[#FCA834]" : isScrolled ? "text-[#38383a]" : "text-white"}`}>Our Team</Link>
+          <Link href="/blog" className={`text-lg ${isWhite && "text-[#ffffff_!important]"} hover:text-[#FCA834] duration-300 ${checkCurrentPage("blog") ? "text-[#FCA834]" : isScrolled ? "text-[#38383a]" : "text-white"}`}>Blog</Link>
+          <Link href="/contact" className={`text-lg ${isWhite && "text-[#ffffff_!important]"} hover:text-[#FCA834] duration-300 ${checkCurrentPage("contact") ? "text-[#FCA834]" : isScrolled ? "text-[#38383a]" : "text-white"}`}>Contact</Link>
         </div>
 
-        <div className={`flex xl:hidden border ${isWhite ? "text-white border-[#fff]" : "text-[#3a3a38] border-[#3a3a38]"} text-4xl cursor-pointer rounded-lg p-2`} onClick={() => setMenuOpen(true)}>
+        <div className={`flex xl:hidden border ${isWhite ? "text-white border-[#fff]" : "text-white border-white"} text-4xl cursor-pointer rounded-lg p-2`} onClick={() => setMenuOpen(true)}>
           <LuMenu />
         </div>
       </nav>

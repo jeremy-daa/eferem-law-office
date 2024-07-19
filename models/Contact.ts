@@ -16,6 +16,9 @@ const ContactSchema = new Schema(
     message: {
       type: String,
     },
+    subject: {
+      type: String,
+    },
     createdAt: {
       type: Date,
       default: Date.now,

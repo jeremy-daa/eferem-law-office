@@ -1,17 +1,329 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Manrope:wght@200..800&display=swap");
 
 :root {
-    --theme-yellow: #FCA933;
-    --theme-blue: #085AA0;
-    --dark: #1c1c1c;
-    --light: #f1f1f1;
+  --theme-yellow: #e3b748;
+  --theme-blue: #2B6281;
+  --glass-blue: #2B6281c5;
 }
 
-body {
-    background-color: #F1F1EF;
-    scroll-behavior: smooth;
+/* smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+
+/* ///////////////////////////////////////////// Book Effect ///////////////////////////////////////////////////// */
+
+.book{
+  perspective: 2000px;
+  transition: .5s;
+}
+.book:hover{
+  box-shadow: 5px 5px 20px rgba(0,0,0,.5);
+}
+.bookcover{
+  animation: bookanimOut .3s forwards;
+}
+.book:hover .bookcover{
+  animation: bookanimIn 1s forwards;
+}
+@keyframes bookanimIn{
+  0%{
+    transform: translateY(0) rotate(0deg);
+  }
+  50%{
+    transform: translateY(-100%) rotateZ(30deg) rotateX(50deg);
+  }
+  100%{
+    transform: translateY(0%) rotate(0deg);
+    z-index: -10;
+  }
+}
+@keyframes bookanimOut{
+  0%{
+    transform: translateY(0) rotate(0deg);
+    z-index: -10;
+  }
+  50%{
+    transform: translateY(-100%) rotate(30deg);
+  }
+  100%{
+    transform: translateY(0%) rotate(0deg);
+    z-index: 1;
+  }
+}
+.book:hover .bookpage{
+  
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+
+.hello {
+  background-color: aquamarine;
+}
+
+.hero_bg {
+  background: var(--theme-blue);
+  background: linear-gradient(70deg,
+      var(--theme-blue) 0%,
+      #1c4d6a 100%);
+}
+
+.active {
+  border-bottom: 2px solid var(--theme-yellow);
+  padding-bottom: 2px;
+}
+
+.bg_card {
+  background: rgb(13, 24, 37);
+  background: linear-gradient(180deg, rgba(13, 24, 37, 0.324) 20%, rgb(9, 25, 44) 100%);
+}
+
+.flyInLeft {
+  animation-name: flyInLeft;
+  animation-duration: 1s;
+}
+
+.flyInRight {
+  animation-name: flyInRight;
+  animation-duration: 1s;
+  transform: translateY(50px);
+
+}
+
+.button {
+  background-color: var(--theme-yellow);
+  color: var(--theme-blue);
+  padding: 15px 30px;
+  border-radius: 2px;
+  font-weight: 600;
+  font-size: 1.2rem;
+  cursor: pointer;
+  min-width: 180px;
+  text-align: center;
+  width: fit-content;
+  transition: all 0.3s;
+  letter-spacing: 0.1rem;
+  border: 1px solid var(--theme-yellow);
+}
+
+.button:hover {
+  background-color: var(--theme-blue);
+  color: var(--theme-yellow);
+}
+
+.buttonN {
+  background-color: var(--theme-blue);
+  color: var(--theme-yellow);
+  padding: 15px 30px;
+  border-radius: 2px;
+  font-weight: 600;
+  font-size: 1.2rem;
+  cursor: pointer;
+  min-width: 180px;
+  text-align: center;
+  width: fit-content;
+  transition: all 0.3s;
+  letter-spacing: 0.1rem;
+  border: 1px solid var(--theme-blue);
+}
+
+.buttonN:hover {
+  background-color: var(--theme-yellow);
+  color: var(--theme-blue);
+}
+
+@keyframes flyInLeft {
+  0% {
+    transform: translateX(100%);
+
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes flyInRight {
+  0% {
+    transform: translateX(-100%) translateY(50px);
+    opacity: 0.3;
+  }
+
+  100% {
+    transform: translateX(0) translateY(50px);
+    opacity: 1;
+  }
+}
+
+.underLine {
+  position: relative;
+
+}
+
+.heroShadow {
+  filter: drop-shadow(0px 0px 15px var(--theme-yellow));
+
+}
+
+.underLine::after {
+  content: "";
+  display: block;
+  width: 70%;
+  height: 2px;
+  border-radius: 2px;
+  background-color: var(--theme-yellow);
+  margin-top: 5px;
+
+}
+
+.sliderShadow {
+  position: relative;
+}
+
+.sliderShadow::after {
+  content: "";
+  display: block;
+  height: 100%;
+  width: 25px;
+  border-radius: 2px;
+  background-color: var(--theme-yellow);
+  margin-top: 5px;
+  position: absolute;
+  bottom: 0;
+}
+
+.hoverScale {
+  transition: all 0.3s;
+}
+
+.hoverScale:hover {
+  filter: drop-shadow(0px 0px 5px var(--theme-yellow));
+  transform: scale(1.05);
+}
+
+.cardHover {
+  transition: all 0.3s;
+}
+
+.cardHover:hover {
+  filter: drop-shadow(0px 0px 5px var(--theme-yellow));
+  transform: translateY(-10px);
+}
+
+.buttonSmall {
+  background-color: var(--theme-yellow);
+  color: var(--theme-blue);
+  padding: 8px 15px;
+  border-radius: 2px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: center;
+  width: fit-content;
+  transition: all 0.3s;
+  letter-spacing: 0.1rem;
+  border: 1px solid var(--theme-yellow);
+}
+
+.buttonSmall:hover {
+  background-color: var(--theme-blue);
+  color: var(--theme-yellow);
+}
+
+.expandButton {
+  @apply flex justify-start items-center gap-2 mb-3 max-w-[40px] px-3 py-2 overflow-hidden duration-500;
+}
+
+.expandButton>svg {
+  @apply min-w-[20px] max-w-[20px] min-h-[20px] max-h-[20px] flex justify-center items-center;
+}
+
+.expandButton:hover {
+  @apply max-w-[150px] px-5;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+}
+
+.boxShadow:hover {
+  box-shadow: 0 0 10px var(--theme-yellow);
+}
+
+.input {
+  background: var(--glass-blue);
+  backdrop-filter: blur(10px);
+  border-radius: 2px;
+  padding: 10px 15px;
+  color: white;
+  border: none;
+  outline: none;
+  border: 2px solid transparent;
+  transition: all 0.3s;
+}
+
+.input::placeholder {
+  color: white;
+
+}
+
+.input:focus {
+  border: 2px solid var(--theme-yellow);
+}
+
+.contactInput {
+  background: var(--glass-blue);
+  backdrop-filter: blur(10px);
+  border-radius: 2px;
+  padding: 10px 15px;
+  color: white;
+  border: none;
+  outline: none;
+  width: 100%;
+  border: 2px solid transparent;
+  transition: all 0.3s;
+}
+
+.contactInput::placeholder {
+  color: white;
+}
+
+.contactInput:focus {
+  border: 2px solid var(--theme-yellow);
+}
+
+.map {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.map:before,
+.map:after {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  content: "";
+  z-index: 2;
+}
+
+.map:before {
+  top: 0;
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0) 0%, rgba(34, 40, 49, 1) 100%);
+}
+
+.map:after {
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(34, 40, 49, 1) 100%);
 }
 
 /* //////////////////////////////////////// Pagination ////////////////////////////////////// */

@@ -21,7 +21,7 @@ const PostSchema = new Schema(
       default: Date.now,
     },
     image: String,
-    fileAttached: String,
+    fileAttached: [String],
     comments: [
       {
         commenter: String,
