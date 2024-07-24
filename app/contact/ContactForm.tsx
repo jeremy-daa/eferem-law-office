@@ -7,8 +7,8 @@ export default function ContactForm() {
     name: '',
     email: '',
     phone: '',
-    service: '',
-    message: ''
+    message: '',
+    subject: ''
   })
 
 
@@ -21,7 +21,20 @@ export default function ContactForm() {
 
   const handleSubmit = (e: any) => {
     e.preventDefault()
-    // console.log(form)
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(form)
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log(data)
+    })
+    .catch(err => {
+      console.log(err)
+    })
   }
 
   return (
@@ -31,7 +44,7 @@ export default function ContactForm() {
                 <input name='name' type="text" placeholder="Full Name*" className="min-w-[150px] sm:min-w-[300px] w-full bg-transparent py-3 placeholder:text-[#eee] text-white text-base font-light outline-none border-b border-[#ffffff88] focus:border-[#FBC982] duration-300" />
                 <input name='email' type="email" placeholder="Email Address*" className="min-w-[150px] sm:min-w-[300px] w-full bg-transparent py-3 placeholder:text-[#eee] text-white text-base font-light outline-none border-b border-[#ffffff88] focus:border-[#FBC982] duration-300" />
                 <input name='phone' type="tel" placeholder="Phone Number*" className="min-w-[150px] sm:min-w-[300px] w-full bg-transparent py-3 placeholder:text-[#eee] text-white text-base font-light outline-none border-b border-[#ffffff88] focus:border-[#FBC982] duration-300" />
-                <select name="service" id="service" className="min-w-[150px] sm:min-w-[300px] w-full bg-transparent py-3 placeholder:text-[#eee] text-white text-base font-light outline-none border-b border-[#ffffff88] focus:border-[#FBC982] duration-300">
+                <select name="subject" id="subject" className="min-w-[150px] sm:min-w-[300px] w-full bg-transparent py-3 placeholder:text-[#eee] text-white text-base font-light outline-none border-b border-[#ffffff88] focus:border-[#FBC982] duration-300">
                     <option className="text-[#888]" value="service">Select Service You Want</option>
                     <option className="text-[#888]" value="service1">Service 1</option>
                     <option className="text-[#888]" value="service2">Service 2</option>

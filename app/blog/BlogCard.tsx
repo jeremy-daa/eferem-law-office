@@ -9,17 +9,23 @@ interface BlogCardProps {
 
 export default function BlogCard({d}: BlogCardProps) {
   const blogs = d
+
+  const dateConverter = (date: any) => {
+    const newDate = new Date(date)
+    return newDate.toDateString()
+}
   return (
     <div className='w-full px-8 sm:px-[100px] pb-10 flex flex-col items-center gap-5'>
         <h3 className='text-lg sm:text-xl md:text-xl text-[#3a3a38] font-normal text-center'>News</h3>
         <h2 className='text-3xl sm:text-4xl md:text-6xl text-[#3a3a38] font-semibold text-center max-w-[600px] md:leading-[4.25rem] mb-10'>The Latest News And Blog From ELO</h2>
         <div className="w-full flex flex-wrap justify-center gap-16">
             {blogs?.map((blog: any, index: any) => (
-                <Link href={`/blog/${blog.id}`} key={index} className='group w-[350px] h-[400px] relative book'>
-                    <div className="absolute left-0 top-0 w-full h-full flex flex-col p-10 bg-[#eee] duration-1000 bookpage">
+                <Link href={`/blog/${blog._id}`} key={index} className='group w-[350px] h-[400px] relative book'>
+                    <div className="absolute left-0 top-0 w-full h-full  p-10 bg-[#eee] duration-1000 bookpage">
                         <Image src={"/images/Logo_water.png"} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[200px] object-contain" alt="lets work" width={1080} height={1080} quality={100} />
-                        <Image className='w-full h-[120px] object-cover rounded-sm mb-3' src={blog.image} alt={blog.title} width={1920} height={1080} quality={100} />
-                        <p className='relative'>{blog.content.slice(0, 200)}...</p>
+                        <Image className='w-full h-[200px] object-cover rounded-sm mb-3' src={blog.image} alt={blog.title} width={1920} height={1080} quality={100} />
+                        <p className='relative text-sm mb-5'>{blog.content.slice(0, 100)}...</p>
+                        <p className='float-right text-sm'>{dateConverter(blog.createdAt)}</p>
                     </div>
                     <div className="relative overflow-hidden w-full h-full bg-[#fff] border-2 border-[#085AA3] duration-1000 bookcover">
                         <Image className='absolute top-0 left-0 w-full h-full object-cover blur-sm' src={blog.image} alt={blog.title} width={1920} height={1080} quality={100} />

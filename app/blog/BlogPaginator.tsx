@@ -3,20 +3,26 @@ import React,{useEffect, useState} from 'react'
 import ReactPaginate from "react-paginate";
 import BlogCard from './BlogCard';
 // import BlogLoading from './BlogLoading';
-import blogs from '../../data/blogs';
+// import blogs from '../../data/blogs';
 
 interface BlogPaginatorProps {
     d: any
 }
 
 export default function BlogPaginator() {
-    const data = blogs
+    const [blogs, setBlogs] = useState([])
 
+    useEffect(() => {
+        fetch('/api/posts')
+        .then(res => res.json())
+        .then(data => setBlogs(data))
+        .catch(err => console.log(err))
+    }, [])
     // if (loading) return <BlogLoading />;
     // if (error) return <p>Error :(</p>;
 
     return (
-        <Paginator d={data && data} />
+        <Paginator d={blogs} />
     )
 }
 

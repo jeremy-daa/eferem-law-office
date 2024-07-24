@@ -8,14 +8,14 @@ export default function ContactCards() {
                 <div className="w-[50px] h-[50px] flex items-center justify-center rounded-full border border-[#FBC982] text-[#FBC982] text-2xl"><IoCall /></div>
                 <div>
                     <h3 className="text-[#FBC982] text-sm font-medium">Call Us:</h3>
-                    <p className="text-white text-lg font-normal">+91 123 456 7890</p>
+                    <p className="text-white text-lg font-normal">+251 93007 3321</p>
                 </div>
             </div>
             <div className="flex gap-5 sm:min-w-[300px] min-w-[200px] flex-wrap xs:flex-nowrap">
                 <div className="w-[50px] h-[50px] flex items-center justify-center rounded-full border border-[#FBC982] text-[#FBC982] text-2xl"><IoMail /></div>
                 <div>
                     <h3 className="text-[#FBC982] text-sm font-medium">Email Us:</h3>
-                    <p className="text-white text-lg font-normal">elo@gmail.com</p>
+                    <p className="text-white text-lg font-normal">eferemh@elo-law-ethiopia.com</p>
                 </div>
             </div>
         </div>
@@ -25,7 +25,7 @@ export default function ContactCards() {
                 <div className="min-w-[50px] max-w-[50px] h-[50px] flex items-center justify-center rounded-full border border-[#FBC982] text-[#FBC982] text-2xl"><IoLocation /></div>
                 <div>
                     <h3 className="text-[#FBC982] text-sm font-medium">Visit Us:</h3>
-                    <p className="text-white text-lg font-normal">123, XYZ Road, ABC City, 123456</p>
+                    <p className="text-white text-lg font-normal">Lideta Sub City Woreda 8</p>
                 </div>
             </div>
         </div>

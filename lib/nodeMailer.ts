@@ -1,17 +1,14 @@
 import nodemailer from "nodemailer";
 
 export const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+  service: "smtp.office365.com",
   auth: {
     user: process.env.GOOGLE_APP_USER,
     pass: process.env.GOOGLE_APP_PASS,
   },
   tls: {
-    ciphers: "SSLv3",
-    rejectUnauthorized: false,
-  },
+    rejectUnauthorized: false
+  }
 });
 
 export const mailOptions = (
