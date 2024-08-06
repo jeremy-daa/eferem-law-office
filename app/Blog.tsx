@@ -32,14 +32,14 @@ export default function Blog() {
     return "";
   };
   return (
-    <div className="w-full px-8 sm:px-[100px] py-20 flex flex-col gap-5">
+    <div className="w-full px-8 sm:px-[100px] py-20 flex flex-col gap-5 items-center">
       <h3 className="text-xl sm:text-2xl md:text-3xl text-[#3a3a38] font-semibold">
         News
       </h3>
-      <h2 className="text-3xl sm:text-4xl md:text-5xl text-[#3a3a38] font-bold max-w-[450px] md:leading-[4.25rem] mb-10">
+      <h2 className="text-3xl sm:text-4xl md:text-6xl text-center text-[#3a3a38] font-bold max-w-[650px] md:leading-[4.25rem] mb-10">
         The Latest News And Blog From ELO
       </h2>
-      <div className="w-full flex flex-wrap gap-16">
+      <div className="w-full flex flex-wrap gap-16 justify-center">
         {blogs?.slice(0, 3).map((blog: any, index: any) => (
           <Link
             href={`/blog/${blog._id}`}
