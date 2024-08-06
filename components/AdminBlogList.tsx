@@ -49,8 +49,8 @@ const BlogList = ({
           <h1 className="text-3xl font-medium mt-2 text-[var(--theme-yellow)]">
             {title}
           </h1>
-          <p className="text-lg text-[#333] mt-2">
-            <LineBreak str={content} doubleBreak limit={200} />
+          <p className="text-lg text-[#333] mt-2 mb-4">
+            <LineBreak str={content} limit={100} />
           </p>
         </div>
         {file && (
