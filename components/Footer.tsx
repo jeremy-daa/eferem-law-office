@@ -26,13 +26,13 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="flex flex-col max-w-[300px] text-white gap-5">
+        <div className="flex flex-col max-w-[300px] md:max-w-[160px] text-white gap-5">
           <h3 className="text-3xl font-semibold mb-2">Services</h3>
           <div className="flex flex-col gap-4">
-            <p className="text-lg">Business Law</p>
-            <p className="text-lg">Education Law</p>
-            <p className="text-lg">Legal Consultancy</p>
-            <p className="text-lg">General Lawyer</p>
+            <p className="text-lg">Commercial & Financial Service</p>
+            <p className="text-lg">Procurement</p>
+            <p className="text-lg">TAX & Custom Duty</p>
+            <p className="text-lg">Property and Transfer of rights</p>
           </div>
         </div>
 

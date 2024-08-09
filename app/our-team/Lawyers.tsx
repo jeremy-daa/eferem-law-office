@@ -10,7 +10,7 @@ export default function Lawyers() {
         <h2 className='text-3xl sm:text-4xl md:text-6xl text-[#3a3a38] font-semibold max-w-[600px] md:leading-[4.25rem] mb-10'>Meet Our Team of Experienced Lawyers</h2>
         <div className="w-full columns-1 lg:columns-2 gap-20">
             {staff?.map((member, index) => (
-                <div key={index} className="w-full h-fit break-inside-avoid p-8 sm:p-14 mb-20 flex flex-col items-center bg-[#085AA3] text-white rounded-3xl">
+                <Link href={`/lawyer/${member.id}`} key={index} className="w-full h-fit break-inside-avoid p-8 sm:p-14 mb-20 flex flex-col items-center bg-[#085AA3] text-white rounded-3xl duration-300 hover:scale-105">
                     <Image src={member.image} className="w-[250px] h-[250px] object-cover rounded-full" alt={member.name} width={500} height={800} quality={100} />
                     <h2 className='text-2xl text-center my-5 font-bold'>{member.name}</h2>
                     {/* <p className='mb-5 text-lg font-light'>{member.title}</p> */}
@@ -19,8 +19,9 @@ export default function Lawyers() {
                             <Link key={i} href={social.link}>{social.icon}</Link>
                         ))}
                     </div>
-                    <p className='text-xl text-[#ddd] text-center'>{member.bio}</p>
-                </div>
+                    <p className='text-xl text-[#ddd] text-center'>{member.bio.split("\n")[0]}
+                    </p>
+                </Link>
             ))}
         </div>
     </div>

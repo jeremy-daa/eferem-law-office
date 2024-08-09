@@ -60,8 +60,8 @@ export default function Hero2() {
     const router = useRouter()
 
 
-    const goTo = (id: any) => {
-        router.push(`/destinations/${id}`)
+    const goTo = () => {
+        router.push(`/contact`)
     }
 
     const nextSlide = () => {
@@ -121,7 +121,7 @@ export default function Hero2() {
                             {current === 0 && (
                                 <>
                                     <motion.h1 variants={variant1} initial="hidden" animate="visible" exit="exit" className={"text-4xl xs:text-6xl sm:text-[82px] leading-[2.75rem] xs:leading-[6rem] font-bold sm:font-semibold text-[#fff] px-8 md:px-0"} >Your Trusted Legal <span className='text-[#FCA834]'>Advisors</span></motion.h1>
-                                    <motion.button variants={variant2} initial="hidden" animate="visible" exit="exit" onClick={() => goTo("1")} className='text-2xl text-white bg-[#085AA3] hover:shadow-[0_0_10px_5px_#ffffff55] w-fit rounded-lg duration-300 py-5 px-14'>More Detail</motion.button>
+                                    <motion.button variants={variant2} initial="hidden" animate="visible" exit="exit" onClick={() => goTo()} className='text-2xl text-white bg-[#085AA3] hover:shadow-[0_0_10px_5px_#ffffff55] w-fit rounded-lg duration-300 py-5 px-14'>More Detail</motion.button>
                                 </>
                             )}
                         </AnimatePresence>
@@ -134,7 +134,7 @@ export default function Hero2() {
                             {current === 1 && (
                                 <>
                                     <motion.h1 variants={variant1} initial="hidden" animate="visible" exit="exit" className={"text-4xl xs:text-6xl sm:text-[82px] leading-[2.75rem] xs:leading-[6rem] font-bold sm:font-semibold text-[#fff] px-8 md:px-0"} ><span className='text-[#FCA834]'>Expert</span> Legal Solutions Tailored to You </motion.h1>
-                                    <motion.button variants={variant2} initial="hidden" animate="visible" exit="exit" onClick={() => goTo("1")} className='text-2xl text-white bg-[#085AA3] hover:shadow-[0_0_10px_5px_#ffffff55] w-fit rounded-lg duration-300 py-5 px-14'>More Detail</motion.button>
+                                    <motion.button variants={variant2} initial="hidden" animate="visible" exit="exit" onClick={() => goTo()} className='text-2xl text-white bg-[#085AA3] hover:shadow-[0_0_10px_5px_#ffffff55] w-fit rounded-lg duration-300 py-5 px-14'>More Detail</motion.button>
                                 </>
                             )}
                         </AnimatePresence>
@@ -146,8 +146,8 @@ export default function Hero2() {
                         <AnimatePresence>
                             {current === 2 && (
                                 <>
-                                    <motion.h1 variants={variant1} initial="hidden" animate="visible" exit="exit" className={"text-4xl xs:text-6xl sm:text-[82px] leading-[2.75rem] xs:leading-[6rem] font-bold sm:font-semibold text-[#fff] px-8 md:px-0"} >Protecting Rights, Delivering <span className='text-[#FCA834]'>Justice</span></motion.h1>
-                                    <motion.button variants={variant2} initial="hidden" animate="visible" exit="exit" onClick={() => goTo("1")} className='text-2xl text-white bg-[#085AA3] hover:shadow-[0_0_10px_5px_#ffffff55] w-fit rounded-lg duration-300 py-5 px-14'>More Detail</motion.button>
+                                    <motion.h1 variants={variant1} initial="hidden" animate="visible" exit="exit" className={"text-4xl xs:text-6xl sm:text-[82px] leading-[2.75rem] xs:leading-[6rem] font-bold sm:font-semibold text-[#fff] px-8 md:px-0"} >Committed to Your <span className='text-[#FCA834]'>Legal</span> Success</motion.h1>
+                                    <motion.button variants={variant2} initial="hidden" animate="visible" exit="exit" onClick={() => goTo()} className='text-2xl text-white bg-[#085AA3] hover:shadow-[0_0_10px_5px_#ffffff55] w-fit rounded-lg duration-300 py-5 px-14'>More Detail</motion.button>
                                 </>
                             )}
                         </AnimatePresence>
