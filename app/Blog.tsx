@@ -7,12 +7,12 @@ import Link from "next/link";
 export default function Blog() {
   const [blogs, setBlogs] = useState([]);
 
-  useEffect(() => {
-    fetch("/api/posts")
-      .then((res) => res.json())
-      .then((data) => setBlogs(data))
-      .catch((err) => console.log(err));
-  }, []);
+  // useEffect(() => {
+  //   fetch("/api/posts")
+  //     .then((res) => res.json())
+  //     .then((data) => setBlogs(data))
+  //     .catch((err) => console.log(err));
+  // }, []);
 
   const dateConverter = (date: any) => {
     const newDate = new Date(date);

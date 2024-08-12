@@ -12,7 +12,7 @@ const Footer = () => {
     <div
       className={`${
         currentPage === "admin" ? "flex" : "flex"
-      } flex-col items-center gap-[50px] bg-[#085AA3] px-8 sm:px-16 md:px-[100px] py-10`}
+      } flex-col items-center gap-[50px] bg-[#085AA3] px-8 sm:px-16 md:px-[80px] py-10`}
     >
       <div className="flex flex-col sm:flex-row sm:justify-center sm:items-center gap-5 border-b pb-10 w-full max-w-[700px]">
         <Image
@@ -109,9 +109,7 @@ const Footer = () => {
             </div>
             <div className="flex items-center gap-4">
               <CiMail size={30} />
-              <p className="text-lg whitespace-nowrap">
-                eferemh@elo-law-ethiopia.com
-              </p>
+              <p className="text-lg ">eferemh@elo-law-ethiopia.com</p>
             </div>
             {/* <div className="flex items-center gap-4"><CiMail size={30} /><p className="text-lg">eferemh@yahoo.com</p></div> */}
           </div>
