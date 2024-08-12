@@ -1,0 +1,459 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Manrope:wght@200..800&display=swap");
+
+:root {
+  --theme-yellow: #FBA832;
+  --theme-blue: #0859A4;
+  --glass-blue: #0859A4c5;
+}
+
+/* smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+
+/* ///////////////////////////////////////////// Book Effect ///////////////////////////////////////////////////// */
+
+.book {
+  perspective: 2000px;
+  transition: .5s;
+}
+
+.booktext {
+  word-break: break-all;
+}
+
+.book:hover {
+  box-shadow: 5px 5px 20px rgba(0, 0, 0, .5);
+}
+
+.bookcover {
+  animation: bookanimOut .3s forwards;
+}
+
+.book:hover .bookcover {
+  animation: bookanimIn 1s forwards;
+}
+
+@keyframes bookanimIn {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-100%) rotateZ(30deg) rotateX(50deg);
+  }
+
+  100% {
+    transform: translateY(0%) rotate(0deg);
+    z-index: -10;
+  }
+}
+
+@keyframes bookanimOut {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    z-index: -10;
+  }
+
+  50% {
+    transform: translateY(-100%) rotate(30deg);
+  }
+
+  100% {
+    transform: translateY(0%) rotate(0deg);
+    z-index: 1;
+  }
+}
+
+.book:hover .bookpage {}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+
+.hello {
+  background-color: aquamarine;
+}
+
+.hero_bg {
+  background: var(--theme-blue);
+  background: linear-gradient(70deg,
+      var(--theme-blue) 0%,
+      #1c4d6a 100%);
+}
+
+.active {
+  border-bottom: 2px solid var(--theme-yellow);
+  padding-bottom: 2px;
+}
+
+.bg_card {
+  background: rgb(13, 24, 37);
+  background: linear-gradient(180deg, rgba(13, 24, 37, 0.324) 20%, rgb(9, 25, 44) 100%);
+}
+
+.flyInLeft {
+  animation-name: flyInLeft;
+  animation-duration: 1s;
+}
+
+.flyInRight {
+  animation-name: flyInRight;
+  animation-duration: 1s;
+  transform: translateY(50px);
+
+}
+
+.button.buttonSmall {
+  padding: 8px 15px;
+  font-size: 1rem;
+
+}
+
+
+.button {
+  background-color: var(--theme-yellow);
+  color: var(--theme-blue);
+  padding: 15px 30px;
+  border-radius: 2px;
+  font-weight: 600;
+  font-size: 1.2rem;
+  cursor: pointer;
+  min-width: 180px;
+  text-align: center;
+  width: fit-content;
+  transition: all 0.3s;
+  letter-spacing: 0.1rem;
+  border: 1px solid var(--theme-yellow);
+}
+
+.button:hover {
+  background-color: var(--theme-blue);
+  color: var(--theme-yellow);
+}
+
+.buttonN {
+  background-color: var(--theme-blue);
+  color: var(--theme-yellow);
+  padding: 15px 30px;
+  border-radius: 2px;
+  font-weight: 600;
+  font-size: 1.2rem;
+  cursor: pointer;
+  min-width: 180px;
+  text-align: center;
+  width: fit-content;
+  transition: all 0.3s;
+  letter-spacing: 0.1rem;
+  border: 1px solid var(--theme-blue);
+}
+
+.buttonN:hover {
+  background-color: var(--theme-yellow);
+  color: var(--theme-blue);
+}
+
+@keyframes flyInLeft {
+  0% {
+    transform: translateX(100%);
+
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes flyInRight {
+  0% {
+    transform: translateX(-100%) translateY(50px);
+    opacity: 0.3;
+  }
+
+  100% {
+    transform: translateX(0) translateY(50px);
+    opacity: 1;
+  }
+}
+
+.underLine {
+  position: relative;
+
+}
+
+.heroShadow {
+  filter: drop-shadow(0px 0px 15px var(--theme-yellow));
+
+}
+
+.underLine::after {
+  content: "";
+  display: block;
+  width: 70%;
+  height: 2px;
+  border-radius: 2px;
+  background-color: var(--theme-yellow);
+  margin-top: 5px;
+
+}
+
+.sliderShadow {
+  position: relative;
+}
+
+.sliderShadow::after {
+  content: "";
+  display: block;
+  height: 100%;
+  width: 25px;
+  border-radius: 2px;
+  background-color: var(--theme-yellow);
+  margin-top: 5px;
+  position: absolute;
+  bottom: 0;
+}
+
+.hoverScale {
+  transition: all 0.3s;
+}
+
+.hoverScale:hover {
+  filter: drop-shadow(0px 0px 5px var(--theme-yellow));
+  transform: scale(1.05);
+}
+
+.cardHover {
+  transition: all 0.3s;
+}
+
+.cardHover:hover {
+  filter: drop-shadow(0px 0px 5px var(--theme-yellow));
+  transform: translateY(-10px);
+}
+
+.buttonSmall {
+  background-color: var(--theme-yellow);
+  color: var(--theme-blue);
+  padding: 8px 15px;
+  border-radius: 2px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: center;
+  width: fit-content;
+  transition: all 0.3s;
+  letter-spacing: 0.1rem;
+  border: 1px solid var(--theme-yellow);
+}
+
+.buttonSmall:hover {
+  background-color: var(--theme-blue);
+  color: var(--theme-yellow);
+}
+
+.expandButton {
+  @apply flex justify-start items-center gap-2 mb-3 max-w-[40px] px-3 py-2 overflow-hidden duration-500;
+}
+
+.expandButton>svg {
+  @apply min-w-[20px] max-w-[20px] min-h-[20px] max-h-[20px] flex justify-center items-center;
+}
+
+.expandButton:hover {
+  @apply max-w-[150px] px-5;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+}
+
+.boxShadow:hover {
+  box-shadow: 0 0 10px var(--theme-yellow);
+}
+
+.input {
+  background: var(--glass-blue);
+  backdrop-filter: blur(10px);
+  border-radius: 2px;
+  padding: 10px 15px;
+  color: white;
+  border: none;
+  outline: none;
+  border: 2px solid transparent;
+  transition: all 0.3s;
+}
+
+.input::placeholder {
+  color: white;
+
+}
+
+.input:focus {
+  border: 2px solid var(--theme-yellow);
+}
+
+.contactInput {
+  background: var(--glass-blue);
+  backdrop-filter: blur(10px);
+  border-radius: 2px;
+  padding: 10px 15px;
+  color: white;
+  border: none;
+  outline: none;
+  width: 100%;
+  border: 2px solid transparent;
+  transition: all 0.3s;
+}
+
+.contactInput::placeholder {
+  color: white;
+}
+
+.contactInput:focus {
+  border: 2px solid var(--theme-yellow);
+}
+
+.map {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.map:before,
+.map:after {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  content: "";
+  z-index: 2;
+}
+
+.map:before {
+  top: 0;
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0) 0%, rgba(34, 40, 49, 1) 100%);
+}
+
+.map:after {
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(34, 40, 49, 1) 100%);
+}
+
+/* //////////////////////////////////////// Pagination ////////////////////////////////////// */
+.pagination {
+  width: 100%;
+  /* float: right; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 50px 0;
+  border-radius: 100px;
+}
+
+.pagination__page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 35px;
+  height: 35px;
+  font-size: 1.5rem;
+  border-radius: 50%;
+  /* background-color: #489b42; */
+  color: #555;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.pagination__pageActive {
+  color: #000;
+}
+
+.pagination__pagePrev {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 35px;
+  height: 35px;
+  font-size: 2rem;
+  border-radius: 50%;
+  margin-right: 30px;
+  color: #555;
+  cursor: pointer;
+}
+
+.pagination__pageNext {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 35px;
+  height: 35px;
+  font-size: 2rem;
+  border-radius: 50%;
+  margin-left: 30px;
+  color: #555;
+  cursor: pointer;
+}
+
+/* ///////////////////////////////////////////////////////////////////////////////////////// */
+
+
+.v-badge {
+  position: relative;
+  text-decoration: none;
+  padding: 8px 16px;
+  color: white;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(to bottom, #1273ce, #0859A4);
+  border-radius: 999px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  user-select: none;
+}
+
+.v-badge span {
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  top: -12px;
+  right: -2px;
+  transform: rotate(-20deg);
+  filter: blur(0.5px);
+}
+
+.v-badge span:before,
+.v-badge span:after {
+  content: "";
+  position: absolute;
+}
+
+.v-badge span:before {
+  width: 1px;
+  height: 100%;
+  left: 12px;
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.7), transparent);
+}
+
+.v-badge span:after {
+  width: 100%;
+  height: 1px;
+  top: 12px;
+  background: linear-gradient(to left, transparent, rgba(255, 255, 255, 0.7), transparent);
+}
+
+.v-badge:before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  background: linear-gradient(30deg, #1273ce 60%, white);
+  top: -1px;
+  right: -1px;
+  bottom: -1px;
+  left: -1px;
+  border-radius: 999px;
+}
