@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Contact from "@/models/Contact";
-import { getAuthSession } from "@/lib/authOptions";
+import { getNeonSession } from "@/lib/auth";
 import dbConnect from "@/utils/dbConnect";
 
 export async function DELETE(
@@ -8,7 +8,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const id = params.id || "";
-  const session = await getAuthSession();
+  const session = await getNeonSession();
   if (!session?.user) {
     return NextResponse.json(
       { message: "User not authenticated" },

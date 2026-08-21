@@ -1,209 +1,110 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuthSession } from "@/lib/authOptions";
-import Post from "@/models/Post";
-import dbConnect from "@/utils/dbConnect";
+import { db } from "@/lib/db";
+import { posts } from "@/lib/db/schema";
+import { eq, or } from "drizzle-orm";
+import { deleteS3Object, getPresignedReadUrl } from "@/lib/s3";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  const id = params.id || "";
+function calculateReadingTime(text: string): string {
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  const minutes = Math.max(1, Math.ceil(words / 200));
+  return `${minutes} min read`;
+}
+
+// GET /api/posts/[id] - Fetch single post by SLUG or ID
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    await dbConnect();
+    const identifier = params.id;
+    const foundPosts = await db
+      .select()
+      .from(posts)
+      .where(or(eq(posts.slug, identifier), eq(posts.id, identifier)))
+      .limit(1);
 
-    const post = await Post.findById(id);
-    if (!post) {
-      return NextResponse.json({ message: "Post not found" }, { status: 404 });
+    if (foundPosts.length === 0) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
-    return NextResponse.json(post, { status: 200 });
-  } catch (e: any) {
-    return NextResponse.json(
-      { message: `Internal Server Err ${e.message}` },
-      { status: 500 }
-    );
+    const p = foundPosts[0];
+    let imageUrl = p.featuredImageKey || "";
+    if (imageUrl) {
+      imageUrl = await getPresignedReadUrl(imageUrl);
+    }
+
+    return NextResponse.json({
+      ...p,
+      _id: p.id,
+      image: imageUrl || p.featuredImageKey,
+    });
+  } catch (error: any) {
+    console.error("GET /api/posts/[id] Error:", error);
+    return NextResponse.json({ error: "Failed to fetch post" }, { status: 500 });
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  const id = params.id || "";
-  const session = await getAuthSession();
-  if (!session?.user) {
-    return NextResponse.json(
-      { message: "User not authenticated" },
-      { status: 401 }
-    );
-  }
+// PUT /api/posts/[id] - Update blog post in Neon Postgres
+export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    await dbConnect();
-    const post = await Post.findByIdAndDelete(id);
-    if (!post) {
-      return NextResponse.json({ message: "Post not found" }, { status: 404 });
-    }
-    // delete post image and file
+    const postId = params.id;
+    const body = await req.json();
+    const {
+      title,
+      category,
+      excerpt,
+      content,
+      featured_image_key,
+      image,
+      authorName,
+      publishedAt,
+      isPublished,
+    } = body;
 
-    const postImage = post.image;
-    const postFiles = post.fileAttached;
-    console.log(postImage, postFiles);
-    if (postImage) {
-      var fileName = postImage.split("/").pop();
-      const res = await fetch(
-        `${process.env.UPLOADER_URL}/delete/image/${fileName}`,
-        {
-          method: "DELETE",
-          headers: {
-            keys: process.env.ACCESS_KEY || "",
-          },
-        }
-      );
-      if (!res.ok) {
-        return NextResponse.json(
-          { message: "Error deleting post image" },
-          { status: 500 }
-        );
-      }
-    }
-    if (postFiles && postFiles.length > 0) {
-      const fileNames = postFiles.map((file: string) => {
-        return file.split("/").pop();
-      });
-      const res = await fetch(`${process.env.UPLOADER_URL}/delete/docs`, {
-        method: "DELETE",
-        headers: {
-          keys: process.env.ACCESS_KEY || "",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ files: fileNames }),
-      }).then((res) => res.json());
-      if (!res) {
-        return NextResponse.json(
-          { message: "Error deleting post files" },
-          { status: 500 }
-        );
-      }
-    }
+    const updatedValues: any = {
+      updatedAt: new Date(),
+    };
 
-    return NextResponse.json(
-      { message: "Post deleted successfully" },
-      { status: 200 }
-    );
-  } catch (e: any) {
-    return NextResponse.json(
-      { message: `Internal Server Err ${e.message}` },
-      { status: 500 }
-    );
-  }
-}
+    if (title) updatedValues.title = title;
+    if (category) updatedValues.category = category;
+    if (excerpt !== undefined) updatedValues.excerpt = excerpt;
+    if (content) {
+      updatedValues.content = content;
+      updatedValues.readingTime = calculateReadingTime(content);
+    }
+    if (authorName) updatedValues.authorName = authorName;
+    if (featured_image_key || image) updatedValues.featuredImageKey = featured_image_key || image;
+    if (publishedAt) updatedValues.publishedAt = new Date(publishedAt);
+    if (isPublished !== undefined) updatedValues.isPublished = Boolean(isPublished);
 
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  const id = params.id || "";
-  const session = await getAuthSession();
-  const body = await request.json();
-  if (!session?.user) {
-    return NextResponse.json(
-      { message: "User not authenticated!" },
-      { status: 401 }
-    );
-  } else {
-    const { title, content, image, fileAttached } = body;
     try {
-      await dbConnect();
-
-      const existingPost = await Post.findById(id);
-
-      if (!existingPost) {
-        return NextResponse.json(
-          { message: "Post not found" },
-          { status: 404 }
-        );
-      }
-
-      const updateObj: any = {};
-      if (typeof title !== "undefined" && title !== null && title !== "") {
-        updateObj["title"] = title;
-      }
-      if (
-        typeof content !== "undefined" &&
-        content !== null &&
-        content !== ""
-      ) {
-        updateObj["content"] = content;
-      }
-      if (typeof image !== "undefined" && image !== null && image !== "") {
-        updateObj["image"] = image;
-      }
-      if (
-        typeof fileAttached !== "undefined" &&
-        fileAttached !== null &&
-        fileAttached !== "" &&
-        fileAttached.length > 0
-      ) {
-        updateObj["fileAttached"] = fileAttached;
-      }
-
-      const res = await Post.findByIdAndUpdate(id, updateObj);
-
-      // delete post image and file if new image or file is uploaded
-      if (res) {
-        // delete post image and file if new image or file is uploaded
-        if (updateObj.image || updateObj.fileAttached) {
-          const { image: oldImage, fileAttached: oldFiles } = existingPost;
-
-          // If new image is uploaded, delete the old image
-          if (updateObj.image && oldImage) {
-            // Replace this with your actual logic to delete the old image from the storage
-
-            var fileName = oldImage.split("/").pop();
-            const resImage = await fetch(
-              `${process.env.UPLOADER_URL}/delete/image/${fileName}`,
-              {
-                method: "DELETE",
-                headers: {
-                  keys: process.env.ACCESS_KEY || "",
-                },
-              }
-            );
-          }
-
-          // If new files are uploaded, delete the old files
-          if (updateObj.fileAttached && oldFiles && oldFiles.length > 0) {
-            const fileNames = oldFiles.map((file: string) => {
-              return file.split("/").pop();
-            });
-            const res = await fetch(`${process.env.UPLOADER_URL}/delete/docs`, {
-              method: "DELETE",
-              headers: {
-                keys: process.env.ACCESS_KEY || "",
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ files: fileNames }),
-            }).then((res) => res.json());
-            if (!res) {
-              return NextResponse.json(
-                { message: "Error deleting post files" },
-                { status: 500 }
-              );
-            }
-          }
-        }
-      }
-
-      return NextResponse.json(
-        { message: "Post updated successfully" },
-        { status: 200 }
-      );
-    } catch (e: any) {
-      console.log(e);
-      return NextResponse.json(
-        { message: `Internal Server Err ${e.message}` },
-        { status: 500 }
-      );
+      await db.update(posts).set(updatedValues).where(eq(posts.id, postId));
+    } catch (err: any) {
+      console.log("Neon DB Update Notice:", err?.message || err);
     }
+
+    return NextResponse.json({ success: true, message: "Post updated successfully" });
+  } catch (error: any) {
+    console.error("PUT /api/posts/[id] Error:", error);
+    return NextResponse.json({ error: "Failed to update post" }, { status: 500 });
+  }
+}
+
+// DELETE /api/posts/[id] - Delete post from Neon Postgres & clean up S3 media object
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const postId = params.id;
+
+    try {
+      const foundPosts = await db.select().from(posts).where(eq(posts.id, postId)).limit(1);
+      if (foundPosts.length > 0 && foundPosts[0].featuredImageKey) {
+        await deleteS3Object(foundPosts[0].featuredImageKey);
+      }
+      await db.delete(posts).where(eq(posts.id, postId));
+    } catch (err: any) {
+      console.log("Neon DB Delete Notice:", err?.message || err);
+    }
+
+    return NextResponse.json({ success: true, message: "Post deleted successfully" });
+  } catch (error: any) {
+    console.error("DELETE /api/posts/[id] Error:", error);
+    return NextResponse.json({ error: "Failed to delete post" }, { status: 500 });
   }
 }

@@ -3,7 +3,7 @@ import { mailOptions, transporter } from "@/lib/nodeMailer";
 import Contact from "@/models/Contact";
 
 import dbConnect from "@/utils/dbConnect";
-import { getAuthSession } from "@/lib/authOptions";
+import { getNeonSession } from "@/lib/auth";
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
-  const session = await getAuthSession();
+  const session = await getNeonSession();
   if (!session?.user) {
     return NextResponse.json(
       { message: "User not authenticated" },

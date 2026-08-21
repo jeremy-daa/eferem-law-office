@@ -1,403 +1,358 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
-import BlogList from "./AdminBlogList";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  LuPlusCircle,
+  LuFileText,
+  LuFolder,
+  LuClock,
+  LuTrash2,
+  LuFileEdit,
+  LuExternalLink,
+  LuSearch,
+  LuRefreshCw,
+  LuDatabase,
+  LuCheckCircle,
+  LuEye,
+  LuEyeOff
+} from "react-icons/lu";
 
-import BlogListSkeleton from "./BlogListSkeleton";
-import { PiPlusCircleThin } from "react-icons/pi";
+interface Post {
+  id: string;
+  _id?: string;
+  title: string;
+  slug: string;
+  category?: string;
+  excerpt?: string;
+  content: string;
+  image?: string;
+  featuredImageKey?: string;
+  authorName?: string;
+  readingTime?: string;
+  publishedAt?: string;
+  isPublished?: boolean;
+  createdAt?: string;
+}
 
-const cloudName = "dzixkcq2a";
-
-const AdminDashboard = () => {
-  // const cld = new Cloudinary({ cloud: { cloudName, apiKey, apiSecret } });
-  const [posts, setPosts] = useState([]);
-  const [modal, setModal] = useState(false);
-  const [addModal, setAddModal] = useState(false);
-  const [deleteModal, setDeleteModal] = useState(false);
+export default function AdminDashboard() {
+  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [id, setId] = useState("");
-  const [image, setImage] = React.useState<File | null>(null);
-  const [files, setFiles] = React.useState<FileList | null>(null);
-  const [uploadCredentials, setUploadCredentials] = React.useState<any>();
-  const fetchUploadCredentials = async () => {
-    const response = await fetch("/api/upload", {
-      method: "GET",
-    })
-      .then((res) => res.json())
-      .catch((err) => console.log(err));
-    setUploadCredentials(response);
-  };
+  const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const awaitPosts = async () => {
-    const res = await fetch("/api/posts").then((res) => {
+  const fetchPosts = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/posts", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        setPosts(Array.isArray(data) ? data : []);
+      } else {
+        setPosts([]);
+      }
+    } catch (err) {
+      console.error("Failed to fetch posts:", err);
+      setPosts([]);
+    } finally {
       setLoading(false);
-      return res.json();
-    });
-    setPosts(res);
-    console.log(res);
+    }
   };
-  const modalOpener = (id: string) => {
-    setModal(true);
-    setId(id);
-  };
-  const deleteModalOpener = (id: string) => {
-    setDeleteModal(true);
-    setId(id);
-  };
-  const modalCloser = () => {
-    setModal(false);
-    setDeleteModal(false);
-    setAddModal(false);
-    setTitle("");
-    setContent("");
-    setImage(null);
-    setFiles(null);
-    setError("");
-    setId("");
-  };
+
   useEffect(() => {
-    awaitPosts();
-    fetchUploadCredentials();
+    fetchPosts();
   }, []);
-  const addHandler = async () => {
-    var imageUrl = "";
-    var fileUrl = [];
-    if (!title || !content) {
-      return setError("Title and content are required");
-    }
-    setError("");
-    const imageData = new FormData();
-    const filesData = new FormData();
-    if (image) {
-      imageData.append(image.name, image);
-      const res = await fetch(`${uploadCredentials.url}/upload/image`, {
-        method: "POST",
-        body: imageData,
-        headers: {
-          keys: uploadCredentials.secret,
-        },
-      })
-        .then((res) => res.json())
-        .catch((err) => console.log(err));
-      if (res) {
-        imageUrl = res.urlPath;
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this legal article from Neon Postgres and S3 storage?")) return;
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/posts/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        fetchPosts();
+      } else {
+        alert("Failed to delete article.");
       }
+    } catch (err) {
+      alert("Error connecting to server.");
+    } finally {
+      setDeletingId(null);
     }
-    if (files) {
-      Object.keys(files).forEach((key: any) => {
-        filesData.append(files[key].name, files[key]);
+  };
+
+  const handleToggleVisibility = async (id: string, currentStatus?: boolean) => {
+    try {
+      const newStatus = currentStatus === false ? true : false;
+      const res = await fetch(`/api/posts/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isPublished: newStatus }),
       });
-      const res = await fetch(`${uploadCredentials.url}/upload/doc`, {
-        method: "POST",
-        body: filesData,
-        headers: {
-          keys: uploadCredentials.secret,
-        },
-      })
-        .then((res) => res.json())
-        .catch((err) => console.log(err));
-      if (res) {
-        fileUrl = res.urlPaths;
+      if (res.ok) {
+        setPosts((prev) =>
+          prev.map((p) => (p.id === id || p._id === id ? { ...p, isPublished: newStatus } : p))
+        );
       }
-    }
-
-    const res = await fetch("/api/posts", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: title || null,
-        content: content || null,
-        image: imageUrl || null,
-        fileAttached: fileUrl || null,
-      }),
-    });
-    if (res.status === 200) {
-      alert("Post added successfully");
-      console.log("Post added successfully");
-      awaitPosts();
-      modalCloser();
-    } else {
-      alert("An error occurred while adding post");
+    } catch (err) {
+      console.error("Failed to toggle visibility:", err);
     }
   };
-  const deleteHandler = async () => {
-    const res = await fetch(`/api/posts/${id}`, {
-      method: "DELETE",
-    });
-    if (res.status === 200) {
-      alert("Post deleted successfully");
-      console.log("Post deleted successfully");
-      awaitPosts();
-      modalCloser();
-    } else if (res.status === 404) {
-      alert("Post not found");
-    } else {
-      alert("An error occurred while deleting post");
-    }
-  };
-  const updateHandler = async () => {
-    var imageUrl = "";
-    var fileUrl = [];
 
-    setError("");
-    const imageData = new FormData();
-    const filesData = new FormData();
-    if (image) {
-      imageData.append(image.name, image);
-      const res = await fetch(`${uploadCredentials.url}/upload/image`, {
-        method: "POST",
-        body: imageData,
-        headers: {
-          keys: uploadCredentials.secret,
-        },
-      })
-        .then((res) => res.json())
-        .catch((err) => console.log(err));
-      if (res) {
-        imageUrl = res.urlPath;
-      }
-    }
-    if (files) {
-      Object.keys(files).forEach((key: any) => {
-        filesData.append(files[key].name, files[key]);
-      });
-      const res = await fetch(`${uploadCredentials.url}/upload/doc`, {
-        method: "POST",
-        body: filesData,
-        headers: {
-          keys: uploadCredentials.secret,
-        },
-      })
-        .then((res) => res.json())
-        .catch((err) => console.log(err));
-      if (res) {
-        fileUrl = res.urlPaths;
-      }
-    }
+  // Filter posts by search query & category
+  const filteredPosts = posts.filter((p) => {
+    const matchesSearch =
+      p.title.toLowerCase().includes(search.toLowerCase()) ||
+      (p.category && p.category.toLowerCase().includes(search.toLowerCase()));
+    const matchesCategory =
+      selectedCategory === "All" || p.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
-    const res = await fetch(`/api/posts/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: title || null,
-        content: content || null,
-        image: imageUrl || null,
-        fileAttached: fileUrl || null,
-      }),
-    });
-    if (res.status === 200) {
-      alert("Post updated successfully");
-      awaitPosts();
-      modalCloser();
-    } else {
-      alert("An error occurred while updating post");
-    }
-  };
+  const categoriesList = ["All", ...Array.from(new Set(posts.map((p) => p.category || "Corporate & Commercial")))];
+
   return (
-    <div className="relative">
-      {modal && (
-        <>
-          <div className="fixed top-0 left-0 min-w-full min-h-full glass z-30">
-            <div className="w-[500px] bg-white p-7 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[var(--theme-yellow)] border-[2px] rounded-md">
-              {error && <p className="text-red-400 text-xl">{error}</p>}
-              <h1 className="text-2xl font-semibold text-[var(--theme-yellow)] mb-5">
-                Edit Post
-              </h1>
-              <form>
-                <input
-                  type="text"
-                  placeholder="Title"
-                  className="w-full border-[1px] border-[#333] rounded-md p-2 mb-3"
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-                <textarea
-                  placeholder="Content"
-                  className="w-full h-[100px] border-[1px] border-[#333] rounded-md p-2 mb-3"
-                  onChange={(e) => setContent(e.target.value)}
-                ></textarea>
-                <label className="text-[var(--theme-yellow)]">
-                  Update Image
-                </label>
-                <input
-                  type="file"
-                  placeholder="Image"
-                  className="w-full border-[1px] border-[#333] rounded-md p-2 mt-2 mb-3"
-                  accept=".png, .jpeg, .jpg, .gif"
-                  onChange={(e) => {
-                    if (!e.target.files) return;
-                    const currentImage = e.target.files[0];
-                    setImage(currentImage);
-                  }}
-                />
-                <label className="text-[var(--theme-yellow)]">
-                  Update File Attached
-                </label>
-                <input
-                  type="file"
-                  placeholder="Image"
-                  className="w-full border-[1px] border-[#333] rounded-md p-2 mt-2 mb-3"
-                  accept=".pdf, .docx, .doc, .txt"
-                  onChange={(e) => {
-                    if (!e.target.files) return;
-                    const currentFiles = e.target.files;
-                    setFiles(currentFiles);
-                  }}
-                  multiple
-                />
-              </form>
-              <div className="flex gap-10 justify-start items-center">
-                <button
-                  className="bg-[var(--theme-yellow)] text-white rounded-md p-2 mt-2"
-                  onClick={updateHandler}
-                >
-                  Update
-                </button>
-                <button
-                  className="bg-red-400 text-white rounded-md p-2 mt-2"
-                  onClick={modalCloser}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-      {deleteModal && (
-        <>
-          <div className="fixed top-0 left-0 min-w-full min-h-full glass z-30">
-            <div className="w-[500px] bg-white p-7 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[var(--theme-yellow)] border-[2px] rounded-md text-center">
-              <h1 className="text-2xl font-semibold text-[var(--theme-yellow)] mb-5">
-                Delete Post
-              </h1>
-              <p>Are you sure you want to delete this post?</p>
-              <div className="flex gap-10 justify-center items-center mt-5">
-                <button
-                  className="bg-[var(--theme-yellow)] text-white rounded-md p-2 px-10 mt-2"
-                  onClick={deleteHandler}
-                >
-                  Yes
-                </button>
-                <button
-                  className="bg-red-400 text-white rounded-md p-2 px-10 mt-2"
-                  onClick={modalCloser}
-                >
-                  No
-                </button>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-      {addModal && (
-        <>
-          <div className="fixed top-0 left-0 min-w-full min-h-full glass z-30">
-            <div className="w-[500px] bg-white p-7 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[var(--theme-yellow)] border-[2px] rounded-md">
-              {error && <p className="text-red-400 text-xl">{error}</p>}
-              <h1 className="text-2xl font-semibold text-[var(--theme-yellow)] mb-5">
-                Add Post
-              </h1>
-              <form>
-                <input
-                  type="text"
-                  placeholder="Title"
-                  className="w-full border-[1px] border-[#333] rounded-md p-2 mb-3"
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-                <textarea
-                  placeholder="Content"
-                  className="w-full h-[100px] border-[1px] border-[#333] rounded-md p-2 mb-3"
-                  onChange={(e) => setContent(e.target.value)}
-                ></textarea>
-                <label className="text-[var(--theme-yellow)]">Add Image</label>
-                <input
-                  type="file"
-                  accept=".png,.jpg,.jpeg"
-                  placeholder="Image"
-                  className="w-full border-[1px] border-[#333] rounded-md p-2 mt-2 mb-3"
-                  onChange={(e) => {
-                    if (!e.target.files) return;
-                    const currentImage = e.target.files[0];
-                    setImage(currentImage);
-                  }}
-                />
-                <label className="text-[var(--theme-yellow)]">
-                  Add File to be Attached
-                </label>
-                <input
-                  multiple
-                  type="file"
-                  accept=".pdf, .docx, .doc, .txt"
-                  placeholder="Files"
-                  className="w-full border-[1px] border-[#333] rounded-md p-2 mt-2 mb-3"
-                  onChange={(e) => setFiles(e.target.files)}
-                />
-              </form>
-              <div className="flex gap-10 justify-start items-center">
-                <button
-                  className="bg-[var(--theme-yellow)] text-white rounded-md px-6 p-2 mt-2"
-                  onClick={addHandler}
-                >
-                  Add
-                </button>
-                <button
-                  className="bg-red-400 text-white rounded-md px-6 p-2 mt-2"
-                  onClick={modalCloser}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-      {/* <SignOut /> */}
+    <div className="w-full py-12 px-4 sm:px-8 lg:px-12 bg-[#0A1D37] text-white">
+      <div className="max-w-7xl mx-auto flex flex-col gap-10">
 
-      {/* <h1>Admin Dashboard</h1> */}
-      <div>
-        <div className="w-[75%] mx-auto">
-          <h1 className="text-6xl text-[var(--theme-yellow)] font-semibold text-center mb-6">
-            Write a new post
-          </h1>
-          <div
-            className="max-w-[700px] mx-auto h-[150px] border-[3px] cursor-pointer hover:scale-[1.02] duration-300 boxShadow rounded-md border-[var(--theme-yellow)] mb-5 flex justify-center items-center"
-            onClick={() => setAddModal(true)}
-          >
-            <PiPlusCircleThin className="text-[var(--theme-yellow)] text-8xl" />
+        {/* Dashboard Header Bar */}
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-slate-800">
+          <div>
+            <h2 className="font-serif-heading text-3xl sm:text-4xl font-bold tracking-tight">
+              Legal Insights <span className="text-gold-gradient font-serif-heading">CMS</span>
+            </h2>
+            <p className="text-slate-300 text-xs sm:text-sm font-sans-body mt-1">
+              Manage law firm publications, category insights, and S3 media attachments
+            </p>
           </div>
-          <h1 className="text-[50px] text-[var(--theme-yellow)] font-semibold text-center mb-8">
-            Recent posts
-          </h1>
-          {loading && (
-            <>
-              {Array.from({ length: 4 }).map((_, i) => (
-                <BlogListSkeleton key={i} />
-              ))}
-            </>
-          )}
-          {posts &&
-            posts.map((post: any) => (
-              <BlogList
-                key={post._id}
-                id={post._id}
-                title={post.title}
-                content={post.content}
-                image={post.image}
-                file={post.fileAttached}
-                handleEdit={modalOpener}
-                handleDelete={deleteModalOpener}
-              />
-            ))}
+
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <button
+              onClick={fetchPosts}
+              className="p-3.5 rounded-2xl bg-[#061528] border border-slate-700/80 hover:border-[#FBA832] text-slate-300 hover:text-white transition-all shadow-md"
+              title="Refresh Articles"
+            >
+              <LuRefreshCw className={`w-5 h-5 ${loading ? "animate-spin text-[#FBA832]" : ""}`} />
+            </button>
+
+            <Link
+              href="/admin/create-post"
+              className="w-full md:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-[#FBA832] to-[#f99b15] hover:from-[#f99b15] hover:to-[#e08905] text-[#0A1D37] font-bold text-sm shadow-xl shadow-[#FBA832]/30 flex items-center justify-center gap-2.5 transition-all hover:scale-105"
+            >
+              <LuPlusCircle className="w-5 h-5" />
+              <span>+ Create New Article</span>
+            </Link>
+          </div>
         </div>
+
+        {/* Quick Statistics Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="p-6 rounded-3xl bg-gradient-to-b from-[#0D274C] to-[#061528] border border-[#FBA832]/30 shadow-xl flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-[#FBA832]/15 border border-[#FBA832]/40 text-[#FBA832] flex items-center justify-center shrink-0">
+              <LuFileText className="w-6 h-6" />
+            </div>
+            <div>
+              <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Total Articles</span>
+              <h3 className="text-2xl font-bold font-serif-heading text-white">{posts.length}</h3>
+            </div>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-gradient-to-b from-[#0D274C] to-[#061528] border border-[#FBA832]/30 shadow-xl flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-[#085AA3]/30 border border-[#085AA3]/50 text-[#085AA3] flex items-center justify-center shrink-0">
+              <LuFolder className="w-6 h-6" />
+            </div>
+            <div>
+              <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Active Categories</span>
+              <h3 className="text-2xl font-bold font-serif-heading text-white">{Math.max(1, categoriesList.length - 1)}</h3>
+            </div>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-gradient-to-b from-[#0D274C] to-[#061528] border border-[#FBA832]/30 shadow-xl flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center shrink-0">
+              <LuCheckCircle className="w-6 h-6" />
+            </div>
+            <div>
+              <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Published Insights</span>
+              <h3 className="text-2xl font-bold font-serif-heading text-white">{posts.length}</h3>
+            </div>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-gradient-to-b from-[#0D274C] to-[#061528] border border-[#FBA832]/30 shadow-xl flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/40 text-purple-400 flex items-center justify-center shrink-0">
+              <LuDatabase className="w-6 h-6" />
+            </div>
+            <div>
+              <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Storage Engine</span>
+              <h3 className="text-sm font-bold font-serif-heading text-purple-300">Neon Postgres & S3</h3>
+            </div>
+          </div>
+        </div>
+
+        {/* Filter Controls Row */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-[#061528] border border-slate-800">
+          <div className="relative w-full sm:w-80">
+            <LuSearch className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Search articles or categories..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-[#0D274C]/60 border border-slate-700/80 focus:border-[#FBA832] rounded-xl pl-11 pr-4 py-2.5 text-xs text-white placeholder-slate-500 outline-none transition-all"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+            {categoriesList.map((cat, idx) => (
+              <button
+                key={idx}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                  selectedCategory === cat
+                    ? "bg-[#FBA832] text-[#0A1D37] font-bold shadow-md"
+                    : "bg-[#0D274C]/60 text-slate-300 hover:text-white border border-slate-800"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Article Cards Grid */}
+        {loading ? (
+          <div className="py-20 text-center flex flex-col items-center gap-3">
+            <LuRefreshCw className="w-8 h-8 text-[#FBA832] animate-spin" />
+            <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">
+              Fetching Legal Articles from Neon Postgres...
+            </span>
+          </div>
+        ) : filteredPosts.length === 0 ? (
+          /* Empty State */
+          <div className="py-20 px-6 rounded-3xl bg-gradient-to-b from-[#0D274C]/60 to-[#061528] border-2 border-dashed border-slate-700 text-center flex flex-col items-center gap-4">
+            <div className="w-16 h-16 rounded-3xl bg-[#FBA832]/10 border border-[#FBA832]/30 text-[#FBA832] flex items-center justify-center">
+              <LuFileText className="w-8 h-8" />
+            </div>
+            <h3 className="font-serif-heading text-2xl font-bold">No Articles Found</h3>
+            <p className="text-slate-400 text-xs sm:text-sm max-w-md">
+              {search || selectedCategory !== "All"
+                ? "No published articles match your current search or category filter."
+                : "Your legal insights database is currently empty. Click below to write your first legal publication."}
+            </p>
+            <Link
+              href="/admin/create-post"
+              className="mt-2 px-8 py-3.5 rounded-2xl bg-[#FBA832] text-[#0A1D37] font-bold text-xs shadow-lg transition-all hover:scale-105 flex items-center gap-2"
+            >
+              <LuPlusCircle className="w-4 h-4" />
+              <span>+ Create First Article</span>
+            </Link>
+          </div>
+        ) : (
+          /* Articles List */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatePresence>
+              {filteredPosts.map((post) => (
+                <motion.div
+                  key={post.id || post._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="rounded-3xl bg-gradient-to-b from-[#0D274C] to-[#061528] border border-slate-700/80 hover:border-[#FBA832]/60 shadow-xl overflow-hidden flex flex-col justify-between transition-all duration-300 hover:-translate-y-1"
+                >
+                  {/* Banner Image / Thumbnail */}
+                  <div className="relative w-full h-44 bg-[#061528] overflow-hidden">
+                    {post.image ? (
+                      <img
+                        src={post.image}
+                        alt={post.title}
+                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center text-slate-600 gap-2">
+                        <LuFileText className="w-10 h-10" />
+                        <span className="text-xs">No Cover Image Attached</span>
+                      </div>
+                    )}
+                    
+                    <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-[#0A1D37]/90 border border-[#FBA832]/40 text-[#FBA832] text-[11px] font-bold shadow-md">
+                      {post.category || "Corporate & Commercial"}
+                    </span>
+                  </div>
+
+                  {/* Card Body */}
+                  <div className="p-6 flex flex-col gap-3 flex-1">
+                    <div className="flex items-center gap-3 text-[11px] text-slate-400">
+                      <span className="flex items-center gap-1">
+                        <LuClock className="w-3 h-3 text-[#FBA832]" />
+                        {post.readingTime || "3 min read"}
+                      </span>
+                      <span>•</span>
+                      <span>{post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : "Just now"}</span>
+                    </div>
+
+                    <h4 className="font-serif-heading text-lg font-bold text-white line-clamp-2 leading-snug">
+                      {post.title}
+                    </h4>
+
+                    <p className="text-slate-300 text-xs line-clamp-2 leading-relaxed font-sans-body">
+                      {post.excerpt || post.content.replace(/[#*`]/g, "").slice(0, 120) + "..."}
+                    </p>
+                  </div>
+
+                  {/* Card Actions Footer */}
+                  <div className="p-4 px-6 border-t border-slate-800/80 bg-[#061528]/80 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5">
+                      <Link
+                        href={`/blog/${post.slug || post.id || post._id}`}
+                        target="_blank"
+                        className="p-2 rounded-xl text-slate-400 hover:text-[#FBA832] hover:bg-[#0D274C] transition-colors"
+                        title="View Live Article"
+                      >
+                        <LuExternalLink className="w-4 h-4" />
+                      </Link>
+
+                      {/* 1-Click Visibility Toggle */}
+                      <button
+                        onClick={() => handleToggleVisibility(post.id || post._id || "", post.isPublished)}
+                        className={`p-2 rounded-xl border transition-all flex items-center gap-1 text-[11px] font-bold ${
+                          post.isPublished !== false
+                            ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/20"
+                            : "bg-amber-500/10 border-amber-500/40 text-amber-400 hover:bg-amber-500/20"
+                        }`}
+                        title={post.isPublished !== false ? "Click to Hide Article (Draft)" : "Click to Publish Article (Public)"}
+                      >
+                        {post.isPublished !== false ? <LuEye className="w-4 h-4" /> : <LuEyeOff className="w-4 h-4" />}
+                        <span>{post.isPublished !== false ? "Visible" : "Hidden"}</span>
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleDelete(post.id || post._id || "")}
+                        disabled={deletingId === (post.id || post._id)}
+                        className="p-2 rounded-xl text-rose-400 hover:bg-rose-500/20 transition-colors"
+                        title="Delete Article"
+                      >
+                        <LuTrash2 className="w-4 h-4" />
+                      </button>
+
+                      <Link
+                        href={`/admin/create-post?id=${post.id || post._id}`}
+                        className="px-4 py-1.5 rounded-xl bg-[#085AA3]/40 border border-[#FBA832]/30 text-[#FBA832] hover:bg-[#FBA832] hover:text-[#0A1D37] text-xs font-bold transition-all flex items-center gap-1.5"
+                      >
+                        <LuFileEdit className="w-3.5 h-3.5" />
+                        <span>Edit</span>
+                      </Link>
+                    </div>
+                  </div>
+
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
+
       </div>
     </div>
   );
-};
-
-export default AdminDashboard;
+}

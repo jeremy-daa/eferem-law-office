@@ -1,129 +1,182 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-// import blogs from '../data/blogs'
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { LuCalendar, LuClock, LuArrowRight, LuNewspaper } from "react-icons/lu";
+
+// Fallback articles if dynamic DB is empty
+const fallbackBlogs = [
+  {
+    _id: "1",
+    title: "Navigating Commercial Law & Foreign Investment in Ethiopia",
+    content: "An essential legal overview of recent legislative updates governing corporate registration, foreign exchange protocols, and commercial dispute resolution mechanisms in Ethiopia.",
+    image: "/images/home/hero/justice.jpg",
+    createdAt: new Date().toISOString(),
+    category: "Commercial Law",
+    readTime: "5 min read",
+  },
+  {
+    _id: "2",
+    title: "Understanding Custom Duty Regulations & Corporate Tax Laws",
+    title_sub: "Tax Compliance Guide",
+    content: "Key legal strategies for multinational corporations and local enterprises navigating customs valuation, income tax exemptions, and duty-free import incentives.",
+    image: "/images/home/hero/justice-2.jpg",
+    createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
+    category: "Tax & Duty",
+    readTime: "4 min read",
+  },
+  {
+    _id: "3",
+    title: "Property Rights & Commercial Real Estate Transactions",
+    content: "A comprehensive analysis of land lease policies, urban land holding rights, and due diligence requirements for property acquisitions in Addis Ababa.",
+    image: "/images/home/hero/justice-3.jpg",
+    createdAt: new Date(Date.now() - 86400000 * 10).toISOString(),
+    category: "Property Law",
+    readTime: "6 min read",
+  },
+];
 
 export default function Blog() {
-  const [blogs, setBlogs] = useState([]);
+  const [blogs, setBlogs] = useState<any[]>([]);
 
-  // useEffect(() => {
-  //   fetch("/api/posts")
-  //     .then((res) => res.json())
-  //     .then((data) => setBlogs(data))
-  //     .catch((err) => console.log(err));
-  // }, []);
+  useEffect(() => {
+    fetch("/api/posts")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setBlogs(data);
+        } else {
+          setBlogs(fallbackBlogs);
+        }
+      })
+      .catch(() => setBlogs(fallbackBlogs));
+  }, []);
 
-  const dateConverter = (date: any) => {
-    const newDate = new Date(date);
-    return newDate.toDateString();
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   };
-  const checkNovelty = (date: any) => {
-    // take the date and compare it with the current date if it is less than 7 days return new
-    const newDate = new Date(date);
-    const currentDate = new Date();
-    const difference = currentDate.getTime() - newDate.getTime();
-    const days = difference / (1000 * 3600 * 24);
-    if (days <= 7) {
-      return "New";
-    } else if (days <= 30) {
-      return "Recent";
-    }
-    return "";
-  };
+
+  const displayList = blogs && blogs.length > 0 ? blogs.slice(0, 3) : fallbackBlogs;
+
   return (
-    <div className="w-full px-8 sm:px-[100px] py-20 flex flex-col gap-5 items-center">
-      <h3 className="text-xl sm:text-2xl md:text-3xl text-[#3a3a38] font-semibold">
-        News
-      </h3>
-      <h2 className="text-3xl sm:text-4xl md:text-6xl text-center text-[#3a3a38] font-bold max-w-[650px] md:leading-[4.25rem] mb-10">
-        The Latest News And Blog From ELO
-      </h2>
-      <div className="w-full flex flex-wrap gap-16 justify-center">
-        {blogs?.slice(0, 3).map((blog: any, index: any) => (
+    <section className="relative w-full py-20 bg-[#0A1D37] text-white overflow-hidden">
+      {/* Radial Gradient Accent */}
+      <div className="absolute top-1/2 left-0 w-96 h-96 bg-[#FBA832]/5 rounded-full blur-3xl pointer-events-none -translate-y-1/2" />
+
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 relative z-10 flex flex-col items-center">
+        
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center max-w-3xl flex flex-col items-center gap-3.5 mb-14"
+        >
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FBA832]/15 border border-[#FBA832]/35 text-[#FBA832] text-xs font-semibold tracking-wider uppercase">
+            <LuNewspaper className="w-3.5 h-3.5" />
+            <span>Legal Insights & News</span>
+          </div>
+          <h2 className="font-serif-heading text-3xl sm:text-5xl font-bold leading-tight">
+            Latest Publications & <span className="text-gold-gradient font-serif-heading">Legal News</span>
+          </h2>
+          <p className="text-slate-300 text-sm sm:text-base font-sans-body">
+            Stay informed with expert analysis, regulatory updates, and commercial law commentaries authored by Eferem Law Office.
+          </p>
+        </motion.div>
+
+        {/* Magazine Grid */}
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {displayList.map((blog, index) => (
+            <motion.div
+              key={blog._id || index}
+              initial={{ opacity: 0, y: 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+            >
+              <Link
+                href={`/blog/${blog._id}`}
+                className="group relative h-full rounded-xl overflow-hidden bg-[#0D274C]/90 border border-white/10 hover:border-[#FBA832]/50 backdrop-blur-xl flex flex-col transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_12px_30px_-10px_rgba(251,168,50,0.25)]"
+              >
+                {/* Image Cover */}
+                <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#061528]">
+                  <Image
+                    src={blog.image || "/images/home/hero/justice.jpg"}
+                    alt={blog.title}
+                    fill
+                    className="object-cover object-center filter brightness-90 group-hover:scale-105 transition-transform duration-700"
+                    quality={100}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0D274C] via-transparent to-transparent opacity-90" />
+
+                  {/* Category Chip */}
+                  <div className="absolute top-3.5 left-3.5 px-3 py-1 rounded-full bg-[#FBA832] text-[#0A1D37] text-xs font-bold shadow-md">
+                    {blog.category || "Legal Commentary"}
+                  </div>
+                </div>
+
+                {/* Card Content */}
+                <div className="p-5 flex flex-col flex-1 justify-between gap-3.5">
+                  <div>
+                    {/* Date & Read Time */}
+                    <div className="flex items-center gap-3 text-slate-300 text-xs font-medium mb-2.5">
+                      <div className="flex items-center gap-1.5">
+                        <LuCalendar className="w-3.5 h-3.5 text-[#FBA832]" />
+                        <span>{formatDate(blog.createdAt)}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <LuClock className="w-3.5 h-3.5 text-[#FBA832]" />
+                        <span>{blog.readTime || "4 min read"}</span>
+                      </div>
+                    </div>
+
+                    <h3 className="font-serif-heading text-lg font-bold text-white group-hover:text-[#FBA832] transition-colors line-clamp-2 leading-snug">
+                      {blog.title}
+                    </h3>
+
+                    <p className="text-slate-300 text-xs leading-relaxed mt-2 line-clamp-3">
+                      {blog.content}
+                    </p>
+                  </div>
+
+                  {/* Read Article Trigger */}
+                  <div className="pt-3.5 border-t border-slate-700/80 flex items-center justify-between text-[#FBA832] text-xs font-semibold">
+                    <span>Read Full Article</span>
+                    <LuArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* View All Blog Link */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+          className="mt-12"
+        >
           <Link
-            href={`/blog/${blog._id}`}
-            key={index}
-            className="group w-[350px] h-[400px] relative book"
+            href="/blog"
+            className="inline-flex items-center gap-2.5 px-7 py-3 rounded-lg bg-[#0D274C] hover:bg-[#085AA3] border border-[#FBA832]/30 hover:border-[#FBA832] text-white font-semibold text-sm transition-all duration-300 group"
           >
-            <div className="absolute left-0 top-0 w-full h-full  p-10 bg-[#eee] duration-1000 bookpage">
-              <Image
-                src={"/images/Logo_water.png"}
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[200px] object-contain"
-                alt="lets work"
-                width={1080}
-                height={1080}
-                quality={100}
-              />
-              <Image
-                className="w-full h-[200px] object-cover rounded-sm mb-3"
-                src={blog.image}
-                alt={blog.title}
-                width={1920}
-                height={1080}
-                quality={100}
-              />
-              <p className="relative text-sm mb-5">
-                {blog.content.slice(0, 100)}...
-              </p>
-              <p className="float-right text-sm">
-                {dateConverter(blog.createdAt)}
-              </p>
-            </div>
-            <div className="relative overflow-hidden w-full h-full bg-[#fff] border-2 border-[#085AA3] duration-1000 bookcover">
-              <Image
-                className="absolute top-0 left-0 w-full h-full object-cover blur-sm"
-                src={blog.image}
-                alt={blog.title}
-                width={1920}
-                height={1080}
-                quality={100}
-              />
-              <div className="relative w-full h-full flex flex-col items-center bg-[#ffffffaa] pt-20 pb-10 px-7 gap-10 ">
-                <div className="absolute left-10 top-10 -translate-y-1/2 rotate-45 w-10 h-80 bg-[#085AA3]"></div>
-                <div className="absolute left-12 top-10 -translate-y-1/2 rotate-45 w-3 h-80 bg-[#fff]"></div>
-                <Image
-                  className="max-w-[80px] object-contain"
-                  src={"/images/Logo.png"}
-                  alt="logo"
-                  width={1080}
-                  height={1080}
-                  quality={100}
-                />
-                <h2 className="text-center text-2xl text-[#38383a] font-bold">
-                  {blog.title}
-                </h2>
-                <span className="absolute px-2 py-2 text-sm w-fit bottom-2 right-4 text-slate-50">
-                  {checkNovelty(blog.createdAt) && (
-                    <span className="px-4 py-1 rounded-lg bg-[var(--theme-blue)]">
-                      {checkNovelty(blog.createdAt)}
-                    </span>
-                  )}
-                </span>
-              </div>
-            </div>
+            <span>Explore All Insights</span>
+            <LuArrowRight className="w-4 h-4 text-[#FBA832] group-hover:translate-x-1 transition-transform" />
           </Link>
-        ))}
+        </motion.div>
+
       </div>
-    </div>
+    </section>
   );
 }
 
-{
-  /* <Link href={`/blog/${blog._id}`} key={index} className='group w-[350px] min-h-[450px] relative book'>
-                    <div className="absolute left-0 top-0 w-full h-full p-10 bg-[#eee] duration-1000 bookpage">
-                        <Image src={"/images/Logo_water.png"} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[200px] object-contain" alt="lets work" width={1080} height={1080} quality={100} />
-                        <Image className='w-[120px] h-[200px] float-left object-cover rounded-sm mr-3 mb-1' src={blog.image} alt={blog.title} width={1920} height={1080} quality={100} />
-                        <p className='text-justify text-sm booktext border border-[#085AA3] p-5'>{blog.content.slice(0, 350)}...</p>
-                    </div>
-                    <div className="relative overflow-hidden w-full h-full bg-[#fff] border-2 border-[#085AA3] duration-1000 bookcover">
-                        <Image className='absolute top-0 left-0 w-full h-full object-cover blur-sm' src={blog.image} alt={blog.title} width={1920} height={1080} quality={100} />
-                        <div className="relative w-full h-full flex flex-col items-center bg-[#ffffffaa] pt-20 pb-10 px-7 gap-10 ">
-                            <div className="absolute left-10 top-10 -translate-y-1/2 rotate-45 w-10 h-80 bg-[#085AA3]"></div>
-                            <div className="absolute left-12 top-10 -translate-y-1/2 rotate-45 w-3 h-80 bg-[#fff]"></div>
-                            <Image className='max-w-[80px] object-contain' src={"/images/Logo.png"} alt='logo' width={1080} height={1080} quality={100} />
-                            <h2 className='text-center text-2xl text-[#38383a] font-bold'>{blog.title}</h2>
-                        </div>
-                    </div>
-                </Link> */
-}
+
