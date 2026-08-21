@@ -100,10 +100,7 @@ export default function AdminLogin() {
 
         <div className="mt-6 pt-5 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
           <span>Eferem Law Office</span>
-          <Link href="/admin/signup" className="text-[#FBA832] hover:underline font-semibold flex items-center gap-1">
-            <span>Create Initial User</span>
-            <span>→</span>
-          </Link>
+          <span className="text-slate-500 font-medium text-[11px]">Protected Portal</span>
         </div>
       </motion.div>
     </div>

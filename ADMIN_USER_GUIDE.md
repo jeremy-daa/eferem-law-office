@@ -7,7 +7,7 @@ Welcome to the **Eferem Law Office Admin Studio**. This guide is written in plai
 ## 🔑 Step 1: Logging into the Admin Studio
 
 1. Open your web browser and go to:
-   `https://www.elo-law-ethiopia.com/admin/login`
+   `https://www.elo-law-ethiopia.com/admin`
 2. Enter your **Email Address** and **Password**.
 3. Click **"Sign In to Admin Portal"**.
 

@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { users, sessions } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { AUTH_COOKIE_NAME, getNeonSession } from "@/lib/auth";
+import { ENABLE_ADMIN_SIGNUP } from "@/lib/config";
 import crypto from "crypto";
 
 function hashPassword(password: string): string {
@@ -119,6 +120,12 @@ export async function POST(req: NextRequest, { params }: { params: { path: strin
 
   // Neon Managed Auth Sign-Up / Registration Handler
   if (path === "sign-up" || path === "register" || path.includes("sign-up")) {
+    if (!ENABLE_ADMIN_SIGNUP) {
+      return NextResponse.json(
+        { error: "Public admin sign-up is disabled on this server." },
+        { status: 403 }
+      );
+    }
     const { name, email, password, role } = body;
 
     if (!name || !email || !password) {

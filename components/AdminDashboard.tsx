@@ -42,6 +42,7 @@ export default function AdminDashboard() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   const fetchPosts = async () => {
     setLoading(true);
@@ -83,6 +84,7 @@ export default function AdminDashboard() {
   };
 
   const handleToggleVisibility = async (id: string, currentStatus?: boolean) => {
+    setTogglingId(id);
     try {
       const newStatus = currentStatus === false ? true : false;
       const res = await fetch(`/api/posts/${id}`, {
@@ -97,6 +99,8 @@ export default function AdminDashboard() {
       }
     } catch (err) {
       console.error("Failed to toggle visibility:", err);
+    } finally {
+      setTogglingId(null);
     }
   };
 
@@ -314,15 +318,28 @@ export default function AdminDashboard() {
                       {/* 1-Click Visibility Toggle */}
                       <button
                         onClick={() => handleToggleVisibility(post.id || post._id || "", post.isPublished)}
-                        className={`p-2 rounded-xl border transition-all flex items-center gap-1 text-[11px] font-bold ${
+                        disabled={togglingId === (post.id || post._id)}
+                        className={`p-2 rounded-xl border transition-all flex items-center gap-1 text-[11px] font-bold disabled:opacity-50 disabled:cursor-not-allowed ${
                           post.isPublished !== false
                             ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/20"
                             : "bg-amber-500/10 border-amber-500/40 text-amber-400 hover:bg-amber-500/20"
                         }`}
                         title={post.isPublished !== false ? "Click to Hide Article (Draft)" : "Click to Publish Article (Public)"}
                       >
-                        {post.isPublished !== false ? <LuEye className="w-4 h-4" /> : <LuEyeOff className="w-4 h-4" />}
-                        <span>{post.isPublished !== false ? "Visible" : "Hidden"}</span>
+                        {togglingId === (post.id || post._id) ? (
+                          <LuRefreshCw className="w-4 h-4 animate-spin text-[#FBA832]" />
+                        ) : post.isPublished !== false ? (
+                          <LuEye className="w-4 h-4" />
+                        ) : (
+                          <LuEyeOff className="w-4 h-4" />
+                        )}
+                        <span>
+                          {togglingId === (post.id || post._id)
+                            ? "Updating..."
+                            : post.isPublished !== false
+                            ? "Visible"
+                            : "Hidden"}
+                        </span>
                       </button>
                     </div>
 
